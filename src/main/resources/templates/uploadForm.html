@@ -4,7 +4,6 @@
 
     function check() {
       document.getElementById('submit').disabled = (document.getElementById('valeur').value == null);
-      document.getElementById('fichier').innerHTML = document.getElementById('valeur').value;
     }
   </script>
 </head>
@@ -17,9 +16,9 @@
 	<div>
 		<form method="POST" enctype="multipart/form-data" action="/">
 			<table>
-				<tr><td>File to upload:</td><td><input type="file" name="file" id="valeur" onchange="check()"
+				<tr><td>Fichier à imprimer:</td><td><input type="file" name="file" id="valeur" onchange="check()"
 													    /></td></tr>
-				<tr><td id="fichier">
+				<tr><td>
 				</td><td><input type="submit" value="Imprimer"  id="submit" disabled /></td></tr>
 			</table>
 		</form>
