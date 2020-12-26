@@ -40,17 +40,12 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.icepdf.os</groupId>
-			<artifactId>icepdf-core</artifactId>
-			<version>6.1.2</version>
+			<groupId>org.cups4j</groupId>
+			<artifactId>cups4j</artifactId>
+			<version>0.7.6</version>
 		</dependency>
-		<dependency>
-		<groupId>org.icepdf.os</groupId>
-		<artifactId>icepdf-viewer</artifactId>
-		<version>6.1.2</version>
-	</dependency>
 
-		
+
 	</dependencies>
 
 	<build>

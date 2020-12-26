@@ -1,4 +1,13 @@
 <html xmlns:th="https://www.thymeleaf.org">
+<head>
+	<script type="text/javascript">
+
+    function check() {
+      document.getElementById('submit').disabled = (document.getElementById('valeur').value == null);
+      document.getElementById('fichier').innerHTML = document.getElementById('valeur').value;
+    }
+  </script>
+</head>
 <body>
 
 	<div th:if="${message}">
@@ -8,16 +17,26 @@
 	<div>
 		<form method="POST" enctype="multipart/form-data" action="/">
 			<table>
-				<tr><td>File to upload:</td><td><input type="file" name="file" onclick="document.getElementById('submit').disabled = false;"/></td></tr>
-				<tr><td></td><td><input type="submit" value="Imprimer"  id="submit" disabled /></td></tr>
+				<tr><td>File to upload:</td><td><input type="file" name="file" id="valeur" onchange="check()"
+													    /></td></tr>
+				<tr><td id="fichier">
+				</td><td><input type="submit" value="Imprimer"  id="submit" disabled /></td></tr>
 			</table>
 		</form>
 	</div>
 
 	<div>
 		<ul>
-			<li th:each="file : ${files}">
-				<span th:text="${file}" />
+			<li th:each="service : ${printservices}">
+				<span th:text="${service}" />
+			</li>
+		</ul>
+	</div>
+
+	<div>
+		<ul>
+			<li th:each="service : ${cupsservices}">
+				<span th:text="${service}" />
 			</li>
 		</ul>
 	</div>

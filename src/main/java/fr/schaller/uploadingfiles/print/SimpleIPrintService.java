@@ -1,18 +1,20 @@
 package fr.schaller.uploadingfiles.print;
 
-import org.icepdf.core.exceptions.PDFException;
-import org.icepdf.core.exceptions.PDFSecurityException;
-import org.icepdf.core.pobjects.Document;
+
 
 import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
-import javax.print.attribute.standard.MediaSizeName;
-import javax.print.attribute.standard.PrintQuality;
-import org.icepdf.ri.common.PrintHelper;
+
+import org.cups4j.CupsClient;
+import org.cups4j.CupsPrinter;
+import org.cups4j.PrintJob;
+import org.cups4j.PrintRequestResult;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -37,37 +39,30 @@ public class SimpleIPrintService implements IPrintService {
 
     @Override
     public void print( String filePath) {
-        if (services == null || services.length == 0)
-        {
-            init();
+
+        CupsClient cupsClient = null;
+        try {
+            cupsClient = new CupsClient();
+        } catch (Exception e) {
+            throw new PrintException("Erreur lors de la récupération du client cups.",e);
         }
-        if (services.length >0)
-        {
-            Document pdf = new Document();
-
-            try {
-                pdf.setFile(filePath);
-            } catch (PDFException e) {
-                throw new PrintException("error to set file "+filePath,e);
-            } catch (PDFSecurityException e) {
-                throw new PrintException("error security on file "+filePath,e);
-            } catch (IOException e) {
-                throw new PrintException("error IO on file "+filePath,e);
-            }
-
-// create a new print helper with a specified paper size and print
-// quality
-        PrintHelper printHelper = new PrintHelper(null, pdf.getPageTree(),
-                0f, MediaSizeName.ISO_A4, PrintQuality.DRAFT);
-// try and print pages 1 - 10, 1 copy, scale to fit paper.
-
-        printHelper.setupPrintService(services[0], 0, 0, 1, true);
-// print the document
-            try {
-                printHelper.print();
-            } catch (javax.print.PrintException e) {
-                throw new PrintException("Error on print file "+filePath,e);
-            }
+        CupsPrinter cupsPrinter = null;
+        try {
+            cupsPrinter = cupsClient.getDefaultPrinter();
+        } catch (Exception e) {
+            throw new PrintException("Erreur lors de la récupération de l'imprimante par defaut.",e);
+        }
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            throw new PrintException("Le fichier a imprimer n est pas trouve.",e);
+        }
+        PrintJob printJob = new PrintJob.Builder(inputStream).pageFormat("iso-a4").build();
+        try {
+            PrintRequestResult printRequestResult = cupsPrinter.print(printJob);
+        } catch (Exception e) {
+           throw new PrintException("Erreur lors de l'impression.",e);
         }
     }
 
@@ -78,5 +73,20 @@ public class SimpleIPrintService implements IPrintService {
             init();
         }
         return Arrays.stream(services);
+    }
+
+    @Override
+    public Stream<CupsPrinter> listAvailableCupsService() {
+        CupsClient cupsClient = null;
+        try {
+            cupsClient = new CupsClient();
+        } catch (Exception e) {
+            throw new PrintException("Erreur sur creation de CupsClient.",e);
+        }
+        try {
+            return cupsClient.getPrinters().stream();
+        } catch (Exception e) {
+            throw new PrintException("Erreur sur la liste des imprimantes.",e);
+        }
     }
 }
