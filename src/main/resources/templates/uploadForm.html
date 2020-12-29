@@ -8,37 +8,46 @@
   </script>
 </head>
 <body>
-
+	<h1>Impression</h1>
 	<div th:if="${message}">
 		<h2 th:text="${message}"/>
 	</div>
 
-	<div>
+	<tr>
 		<form method="POST" enctype="multipart/form-data" action="/">
 			<table>
 				<tr><td>Fichier à imprimer:</td><td><input type="file" name="file" id="valeur" onchange="check()"
 													    /></td></tr>
-				<tr><td>
-				</td><td><input type="submit" value="Imprimer"  id="submit" disabled /></td></tr>
+
+				<td>Orientation : </td>
+				<td>
+					<select name="orientation">
+					<option label="portrait" value="true" selected />
+					<option label="paysage" value="false" />
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Imprimante : </td>
+				<td>
+					<select name="printer">
+						<option th:each="service : ${cupsservices}" th:label="${service.nom}" th:value="${service.url}" />
+					</select>
+				</td>
+			</tr>
+				<tr>
+					<td>Ajuster l'image à la page ? </td>
+					<td>
+						<input type="checkbox" name="ajuster" value="true"/>
+
+					</td>
+				</tr>
+				<tr>
+				<tr><td colspan="2"><input type="submit" value="Imprimer"  id="submit" disabled style="width:100%;height:100%" /></td></tr>
 			</table>
 		</form>
 	</div>
 
-	<div>
-		<ul>
-			<li th:each="service : ${printservices}">
-				<span th:text="${service}" />
-			</li>
-		</ul>
-	</div>
-
-	<div>
-		<ul>
-			<li th:each="service : ${cupsservices}">
-				<span th:text="${service}" />
-			</li>
-		</ul>
-	</div>
 
 </body>
 </html>

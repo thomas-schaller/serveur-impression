@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -38,8 +39,7 @@ public class SimpleIPrintService implements IPrintService {
     }
 
     @Override
-    public void print( String filePath) {
-
+    public void print( String filePath,URL url, OptionImpression... options) {
         CupsClient cupsClient = null;
         try {
             cupsClient = new CupsClient();
@@ -48,9 +48,13 @@ public class SimpleIPrintService implements IPrintService {
         }
         CupsPrinter cupsPrinter = null;
         try {
-            cupsPrinter = cupsClient.getDefaultPrinter();
+            cupsPrinter = cupsClient.getPrinter(url);
         } catch (Exception e) {
             throw new PrintException("Erreur lors de la récupération de l'imprimante par defaut.",e);
+        }
+        if (cupsPrinter == null )
+        {
+            throw new PrintException("Pas d'imprimante CUPS trouvée pour "+url.toString());
         }
         InputStream inputStream = null;
         try {
@@ -58,7 +62,14 @@ public class SimpleIPrintService implements IPrintService {
         } catch (FileNotFoundException e) {
             throw new PrintException("Le fichier a imprimer n est pas trouve.",e);
         }
-        PrintJob printJob = new PrintJob.Builder(inputStream).pageFormat("iso-a4").build();
+        PrintJob.Builder jobBuilder = new PrintJob.Builder(inputStream);
+        if (options != null)
+        {
+            for (OptionImpression option : options) {
+                jobBuilder = option.configureImpression(jobBuilder);
+            }
+        }
+        PrintJob printJob = jobBuilder.pageFormat("iso-a4").build();
         try {
             PrintRequestResult printRequestResult = cupsPrinter.print(printJob);
         } catch (Exception e) {

@@ -11,9 +11,8 @@
 	<groupId>fr.schaller</groupId>
 	<artifactId>serveur-impression</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>uploading-files</name>
-	<description>Demo project for Spring Boot</description>
-
+	<name>serveur-impression</name>
+	<description>Serveur d impression</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
