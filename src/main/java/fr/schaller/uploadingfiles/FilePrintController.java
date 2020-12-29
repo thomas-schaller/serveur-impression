@@ -1,9 +1,6 @@
 package fr.schaller.uploadingfiles;
 
-import fr.schaller.uploadingfiles.print.AjustementPage;
-import fr.schaller.uploadingfiles.print.IPrintService;
-import fr.schaller.uploadingfiles.print.Imprimante;
-import fr.schaller.uploadingfiles.print.Orientation;
+import fr.schaller.uploadingfiles.print.*;
 import fr.schaller.uploadingfiles.storage.StorageFileNotFoundException;
 import fr.schaller.uploadingfiles.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -56,11 +55,12 @@ public class FilePrintController {
 	public String handleFilePrint(@RequestParam("file") MultipartFile file,
 								  @RequestParam("printer")URL url,
 								  @RequestParam("orientation")boolean estPortrait,
-								  @RequestParam("ajuster")boolean ajusterPage,
+								  @RequestParam(name="ajuster",defaultValue="false")boolean ajusterPage,
 			RedirectAttributes redirectAttributes) {
 
 		Path filePath =storageService.store(file);
-		printService.print(filePath.toFile().getPath(),url, new Orientation(estPortrait), new AjustementPage(ajusterPage));
+
+		printService.print(filePath.toFile().getPath(),url,  new Orientation(estPortrait),new AjustementPage(ajusterPage));
 		storageService.delete(filePath);
 		redirectAttributes.addFlashAttribute("message",
 				"You successfully printed " + file.getOriginalFilename() + "!");
