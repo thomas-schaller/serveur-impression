@@ -22,8 +22,8 @@
 				<td>Orientation : </td>
 				<td>
 					<select name="orientation">
-					<option label="portrait" value="true" selected />
-					<option label="paysage" value="false" />
+					<option value="true" selected >portrait</option>
+					<option value="false" >paysage</option>
 					</select>
 				</td>
 			</tr>
@@ -31,7 +31,7 @@
 				<td>Imprimante : </td>
 				<td>
 					<select name="printer">
-						<option th:each="service : ${cupsservices}" th:label="${service.nom}" th:value="${service.url}" />
+						<option th:each="service : ${cupsservices}" th:text="${service.nom}" th:value="${service.url}" />
 					</select>
 				</td>
 			</tr>
